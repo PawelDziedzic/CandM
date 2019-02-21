@@ -73,6 +73,7 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 	void ApplyGravity()
 	{
 		movement3D.y -= gForce;
+		movement3D.x += speed;
 	}
 
 	void ThreePointShortening()
