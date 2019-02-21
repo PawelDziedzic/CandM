@@ -9,6 +9,7 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 
 	private Vector3 movement3D;
 	private Vector3 oldMovement;
+	private Vector3 newMovement3D;
 
 	private Vector3 arrowMovement;
 	private RaycastHit hitInfo;
@@ -73,13 +74,11 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 	void ApplyGravity()
 	{
 		movement3D.y -= gForce;
-		movement3D.x += speed;
 	}
 
 	void ThreePointShortening()
 	{
 		movement3D = vectorCutOnMargin(getShortestCollisionFromPoints(checkSpotsList,movement3D));
-		//movement3D = vectorCutOnMargin(getShorterVector(ShorteningFromPoint(new Vector3(0f,0.74f,0f),movement3D),getShorterVector(ShorteningFromPoint(Vector3.zero,movement3D),ShorteningFromPoint(new Vector3(0f,-0.74f,0f),movement3D))));
 	}
 
 	Vector3 vectorCutOnMargin(Vector3 vec)
@@ -93,10 +92,10 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 
 	Vector3 getShortestCollisionFromPoints(List<Vector3> vecList, Vector3 inputVec)
 	{
-		Vector3 tempShortest = ShorteningFromPoint(vecList[0],inputVec);
+		Vector3 tempShortest = ShorteningByProjections(vecList[0],inputVec);
 		for(int i=1; i<vecList.Count;i++)
 		{
-			tempShortest = getShorterVector (tempShortest, ShorteningFromPoint (vecList [i], inputVec));
+			tempShortest = getShorterVector (tempShortest, ShorteningByProjections (vecList [i], inputVec));
 		}
 		return tempShortest;
 	}
@@ -109,22 +108,21 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 			return vec1;
 	}
 
-	Vector3 ShorteningFromPoint(Vector3 pos, Vector3 inputVec)
+	Vector3 ShorteningByProjections(Vector3 pos, Vector3 vecInput)
 	{
-		Debug.DrawRay (transform.position + pos, inputVec*0.9f, Color.white);
-		if(Physics.Raycast(transform.position+pos,inputVec.normalized, out hitInfo, inputVec.magnitude)){
-			Debug.Log ("I hit something! " +pos+" - "+ hitInfo.collider.name);
-			drawCross (hitInfo.point, Color.white, 1f);
-			Physics.Raycast (transform.position + pos + inputVec + hitInfo.normal * inputVec.magnitude,
-				-hitInfo.normal, out hitInfo, inputVec.magnitude);
-			Debug.DrawRay (transform.position, hitInfo.point - transform.position + hitInfo.normal * 0.01f, Color.black);
-			drawCross (hitInfo.point, Color.black, 0.5f);
-			Debug.DrawRay (transform.position+pos, hitInfo.point - transform.position -pos + hitInfo.normal * 0.01f, Color.red);
-			return hitInfo.point - transform.position - pos + hitInfo.normal * 0.01f;
-		}
-		else{
-			Debug.Log ("I hit nothing! " +pos);
-			return inputVec;
+		Debug.DrawRay (transform.position + pos, vecInput, Color.white);
+		if (Physics.Raycast (transform.position + pos, vecInput.normalized, out hitInfo, vecInput.magnitude)) {
+			drawCross(hitInfo.point, Color.white, 0.5f);
+			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal);
+			Debug.DrawRay (transform.position + pos, newMovement3D, Color.red);
+			Debug.DrawRay (transform.position + pos, Vector3.ProjectOnPlane (movement3D, hitInfo.normal), Color.blue);
+			newMovement3D += Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
+			Debug.DrawRay (transform.position + pos, newMovement3D, Color.magenta);
+			newMovement3D += hitInfo.normal * 0.01f;
+			Debug.DrawRay (transform.position + pos, newMovement3D, Color.black);
+			return newMovement3D;
+		} else {
+			return vecInput;
 		}
 	}
 
