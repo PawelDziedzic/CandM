@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MomentumPlayerScriptCleaned : MonoBehaviour {
+public class CollisionMomentumScript : MonoBehaviour {
 
 	public float speed;
 	public float gForce;
 
-	private Vector3 movement3D;
-	private Vector3 oldMovement;
-	private Vector3 newMovement3D;
+	protected Vector3 movement3D;
+	protected Vector3 oldMovement;
+	protected Vector3 newMovement3D;
 
-	private Vector3 arrowMovement;
-	private RaycastHit hitInfo;
-	private bool isFacingLeft;
-	private float checkSpotSize;
+	protected Vector3 arrowMovement;
+	protected RaycastHit hitInfo;
+	protected bool isFacingLeft;
+	protected float checkSpotSize;
 
-	private List<Vector3> checkSpotsList;
+	protected List<Vector3> checkSpotsList;
 
 	void Start () {
 		movement3D = Vector3.zero;
@@ -30,32 +30,6 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 			Vector3.zero,
 			new Vector3(0f,-0.74f,0f)
 		};
-	}
-
-	void Update () {
-		arrowMovement.x=0f;
-		if (Input.GetButtonDown ("Jump")) {
-			transform.Translate (2*Vector3.up);
-		}
-
-		if (Input.GetKey (KeyCode.LeftArrow)) 
-		{
-			if (!isFacingLeft){
-				transform.Rotate (new Vector3 (0f, 180f, 0));
-				isFacingLeft = true;
-			}
-			arrowMovement.x = -speed;
-		}
-
-		if (Input.GetKey (KeyCode.RightArrow)) 
-		{
-			if (isFacingLeft) {
-				transform.Rotate (new Vector3 (0f, 180f, 0));
-				isFacingLeft = false;
-			}
-			arrowMovement.x = speed;
-		}
-		//arrowMovement.x = 0.02f;
 	}
 
 	void FixedUpdate()
@@ -113,16 +87,10 @@ public class MomentumPlayerScriptCleaned : MonoBehaviour {
 
 	Vector3 ShorteningByProjections(Vector3 pos, Vector3 vecInput)
 	{
-		Debug.DrawRay (transform.position + pos, vecInput, Color.white);
 		if (Physics.Raycast (transform.position + pos, vecInput.normalized, out hitInfo, vecInput.magnitude)) {
-			drawCross(hitInfo.point, Color.white, 0.5f);
 			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal);
-			Debug.DrawRay (transform.position + pos, newMovement3D, Color.red);
-			Debug.DrawRay (transform.position + pos, Vector3.ProjectOnPlane (movement3D, hitInfo.normal), Color.blue);
 			newMovement3D += Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
-			Debug.DrawRay (transform.position + pos, newMovement3D, Color.magenta);
 			newMovement3D += hitInfo.normal * checkSpotSize;
-			Debug.DrawRay (transform.position + pos, newMovement3D, Color.black);
 			return newMovement3D;
 		} else {
 			return vecInput;
