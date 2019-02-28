@@ -1,55 +1,29 @@
 fileFormatVersion: 2
-guid: 257298056b7034c49843fac593a9bab9
-timeCreated: 1550932484
+guid: 32d0fbd6b29ea564eae4c403f25bfc80
+timeCreated: 1551027718
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Armature
-    100002: ArmL_L
-    100004: ArmU_L
-    100006: //RootNode
-    100008: Cube_001
-    100010: Foot_L
-    100012: Head
-    100014: LegL_L
-    100016: LegU_L
-    100018: Torso
-    100020: ArmL_R
-    100022: ArmU_R
-    100024: Bone
-    100026: Foot_IK_L
-    100028: Foot_IK_R
-    100030: Foot_R
-    100032: LegL_R
-    100034: LegU_R
-    100036: Torso_001
-    400000: Armature
-    400002: ArmL_L
-    400004: ArmU_L
-    400006: //RootNode
-    400008: Cube_001
-    400010: Foot_L
-    400012: Head
-    400014: LegL_L
-    400016: LegU_L
-    400018: Torso
-    400020: ArmL_R
-    400022: ArmU_R
-    400024: Bone
-    400026: Foot_IK_L
-    400028: Foot_IK_R
-    400030: Foot_R
-    400032: LegL_R
-    400034: LegU_R
-    400036: Torso_001
+    100000: //RootNode
+    100002: Armature
+    100004: Bone
+    100006: Bone_001
+    100008: MoCubeJin
+    400000: //RootNode
+    400002: Armature
+    400004: Bone
+    400006: Bone_001
+    400008: MoCubeJin
     2100000: unnamed
-    2300000: Cube_001
-    3300000: Cube_001
+    2300000: //RootNode
+    2300002: MoCubeJin
+    3300000: //RootNode
+    3300002: MoCubeJin
     4300000: Cube_001
+    4300002: MoCubeJin
     7400000: Default Take
     9500000: //RootNode
-    13700000: Cube_001
   externalObjects: {}
   materials:
     importMaterials: 1

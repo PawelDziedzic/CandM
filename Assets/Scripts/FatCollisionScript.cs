@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CollisionMomentumScript : MonoBehaviour {
+public class FatCollisionScript : MonoBehaviour {
 
 	public float speed;
 	public float gForce;
@@ -18,8 +18,7 @@ public class CollisionMomentumScript : MonoBehaviour {
 	protected RaycastHit hitInfo;
 	protected bool isFacingLeft;
 	protected float checkSpotSize;
-
-	protected List<Vector3> checkSpotsList;
+	protected float sphereRadii;
 
 	void Start () {
 		movement3D = Vector3.zero;
@@ -28,13 +27,8 @@ public class CollisionMomentumScript : MonoBehaviour {
 		rotation3D = Vector3.zero;
 		arrowRotation = Vector3.zero;
 		isFacingLeft = false;
-
 		checkSpotSize = 0.01f;
-		checkSpotsList = new List<Vector3> (){
-			new Vector3(0f,0.74f,0f),
-			Vector3.zero,
-			new Vector3(0f,-0.74f,0f)
-		};
+		sphereRadii = 0.55f;
 	}
 
 	void FixedUpdate()
@@ -47,11 +41,10 @@ public class CollisionMomentumScript : MonoBehaviour {
 
 		do{
 			oldMovement = movement3D;
-			ThreePointShortening();
-			for(int i=0; i<checkSpotsList.Count;i++)
-			{
-				Debug.DrawRay(transform.position+checkSpotsList[i],movement3D,Color.cyan);
-			}
+			CapsuleCastShortening();
+			Debug.DrawRay(transform.position+ new Vector3(0f,-0.6f,0f),movement3D,Color.cyan);
+			Debug.DrawRay(transform.position+ new Vector3(0.6f,0f,0f),movement3D,Color.cyan);
+			Debug.DrawRay(transform.position+ new Vector3(-0.6f,0f,0f),movement3D,Color.cyan);
 		}while(!movement3D.Equals(vectorCutOnMargin(oldMovement)));
 	}
 
@@ -60,9 +53,9 @@ public class CollisionMomentumScript : MonoBehaviour {
 		movement3D.y -= gForce;
 	}
 
-	void ThreePointShortening()
+	void CapsuleCastShortening()
 	{
-		movement3D = vectorCutOnMargin(getShortestCollisionFromPoints(checkSpotsList,movement3D));
+		movement3D = vectorCutOnMargin(ShorteningByCast (Vector3.zero, movement3D));
 	}
 
 	Vector3 vectorCutOnMargin(Vector3 vec)
@@ -95,9 +88,21 @@ public class CollisionMomentumScript : MonoBehaviour {
 	Vector3 ShorteningByProjections(Vector3 pos, Vector3 vecInput)
 	{
 		if (Physics.Raycast (transform.position + pos, vecInput.normalized, out hitInfo, vecInput.magnitude)) {
-			drawCross (hitInfo.point, Color.magenta, 1f);
 			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal);
 			newMovement3D += Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
+			newMovement3D += hitInfo.normal * checkSpotSize;
+			return newMovement3D;
+		} else {
+			return vecInput;
+		}
+	}
+
+	Vector3 ShorteningByCast(Vector3 pos, Vector3 vecInput)
+	{
+		if(Physics.SphereCast(transform.position + pos, sphereRadii, vecInput, out hitInfo, vecInput.magnitude)){
+			drawCross (hitInfo.point, Color.magenta, 1f);
+			//newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal);
+			newMovement3D = Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
 			newMovement3D += hitInfo.normal * checkSpotSize;
 			return newMovement3D;
 		} else {
