@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CollisionMomentumScript : MonoBehaviour {
+public class SweepCollisionScript : MonoBehaviour {
 
 	public float speed;
 	public float gForce;
@@ -47,11 +47,8 @@ public class CollisionMomentumScript : MonoBehaviour {
 
 		do{
 			oldMovement = movement3D;
-			ThreePointShortening();
-			for(int i=0; i<checkSpotsList.Count;i++)
-			{
-				Debug.DrawRay(transform.position+checkSpotsList[i],movement3D,Color.cyan);
-			}
+			CapsuleCastShortening();
+			Debug.DrawRay(transform.position,movement3D,Color.cyan);
 		}while(!movement3D.Equals(vectorCutOnMargin(oldMovement)));
 	}
 
@@ -63,6 +60,11 @@ public class CollisionMomentumScript : MonoBehaviour {
 	void ThreePointShortening()
 	{
 		movement3D = vectorCutOnMargin(getShortestCollisionFromPoints(checkSpotsList,movement3D));
+	}
+
+	void CapsuleCastShortening()
+	{
+		movement3D = ShorteningByCast (transform.position, movement3D);
 	}
 
 	Vector3 vectorCutOnMargin(Vector3 vec)
@@ -95,11 +97,21 @@ public class CollisionMomentumScript : MonoBehaviour {
 	Vector3 ShorteningByProjections(Vector3 pos, Vector3 vecInput)
 	{
 		if (Physics.Raycast (transform.position + pos, vecInput.normalized, out hitInfo, vecInput.magnitude)) {
-			drawCross (hitInfo.point, Color.magenta, 1f);
 			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal);
 			newMovement3D += Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
 			newMovement3D += hitInfo.normal * checkSpotSize;
 			return newMovement3D;
+		} else {
+			return vecInput;
+		}
+	}
+
+	Vector3 ShorteningByCast(Vector3 pos, Vector3 vecInput)
+	{
+		if (Physics.CapsuleCast (transform.position + new Vector3 (0f, 0.375f, 0f), transform.position + new Vector3 (0f, -0.375f, 0f),
+			    0.35f, vecInput, out hitInfo, vecInput.magnitude)) {
+			drawCross (hitInfo.point, Color.magenta, 1f);
+			return vecInput;
 		} else {
 			return vecInput;
 		}
