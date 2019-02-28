@@ -101,8 +101,8 @@ public class FatCollisionScript : MonoBehaviour {
 	{
 		if(Physics.SphereCast(transform.position + pos, sphereRadii, vecInput, out hitInfo, vecInput.magnitude)){
 			drawCross (hitInfo.point, Color.magenta, 1f);
-			//newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal);
-			newMovement3D = Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
+			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal) + hitInfo.normal*sphereRadii;
+			newMovement3D += Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
 			newMovement3D += hitInfo.normal * checkSpotSize;
 			return newMovement3D;
 		} else {
