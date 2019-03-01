@@ -14,10 +14,10 @@ public class GenericCollisionCastScript : GenericPhysicsPropertiesScript {
 		movement3D += arrowMovement;
 		rotation3D = arrowRotation;
 
-		do{
+		//do{
 			oldMovement = movement3D;
 			CapsuleCastShortening();
-		}while(!movement3D.Equals(vectorCutOnMargin(oldMovement)));
+		//}while(!movement3D.Equals(vectorCutOnMargin(oldMovement)));
 	}
 
 	void ApplyGravity()
@@ -62,9 +62,9 @@ public class GenericCollisionCastScript : GenericPhysicsPropertiesScript {
 		if(Physics.SphereCast(transform.position + pos, sphereRadii, vecInput, out hitInfo, vecInput.magnitude)){
 			drawCross (hitInfo.point, Color.magenta, 1f);
 			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal) + hitInfo.normal*sphereRadii;
-			newMovement3D += Vector3.ProjectOnPlane (movement3D, hitInfo.normal);
+			newMovement3D += Vector3.ProjectOnPlane (vecInput, hitInfo.normal);
 			newMovement3D += hitInfo.normal * checkSpotSize;
-			return newMovement3D;
+			return ShorteningByCast(pos,newMovement3D);
 		} else {
 			return vecInput;
 		}
