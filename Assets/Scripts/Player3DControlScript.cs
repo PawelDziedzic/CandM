@@ -2,36 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player3DInputScript : CollisionMomentumScript {
+public class Player3DControlScript : GenericCollisionCastScript {
 
-	// Use this for initialization
-	void Start () {
-
-		movement3D = Vector3.zero;
-		oldMovement = Vector3.zero;
-		arrowMovement = Vector3.zero;
-		isFacingLeft = false;
-		rotation3D = Vector3.zero;
-		arrowRotation = Vector3.zero;
-
-		checkSpotSize = 0.01f;
-		checkSpotsList = new List<Vector3> (){
-			new Vector3(0f,0.74f,0f),
-			Vector3.zero,
-			new Vector3(0f,-0.74f,0f)
-		};
-		
-	}
-	
-	// Update is called once per frame
+	public float speed;
 	void Update () {
 		arrowMovement.z = 0f;
 
 		if (Input.GetButtonDown ("Jump")) {
 			transform.Translate (2*Vector3.up);
 		}
-
-
 
 		if (Input.GetKey (KeyCode.UpArrow)) 
 		{

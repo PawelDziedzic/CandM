@@ -2,25 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PLayer2DInputScript : CollisionMomentumScript {
+public class Player2DControlScript : GenericCollisionCastScript {
 
-	// Use this for initialization
-	void Start () {
+	protected bool isFacingLeft;
+	public float speed;
 
-		movement3D = Vector3.zero;
-		oldMovement = Vector3.zero;
-		arrowMovement = Vector3.zero;
+	void OnEnable(){
 		isFacingLeft = false;
-
-		checkSpotSize = 0.01f;
-		checkSpotsList = new List<Vector3> (){
-			new Vector3(0f,0.74f,0f),
-			Vector3.zero,
-			new Vector3(0f,-0.74f,0f)
-		};
 	}
 
-	// Update is called once per frame
 	void Update () {
 
 		arrowMovement.x=0f;
