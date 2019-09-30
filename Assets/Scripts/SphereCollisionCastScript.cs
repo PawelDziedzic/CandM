@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SphereCollisionCastScript : GenericPhysicsPropertiesScript{
 
+
 	void Start () {
 		movement3D = Vector3.zero;
 		oldMovement = Vector3.zero;
@@ -16,5 +17,7 @@ public class SphereCollisionCastScript : GenericPhysicsPropertiesScript{
 		checkSpotsList = new List<Vector3> (){
 			new Vector3(0f,0f,0f)
 		};
+
+		spheresList = new List<SphereCollider> ();
 	}
 }

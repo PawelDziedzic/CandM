@@ -7,15 +7,17 @@ public class GenericPhysicsPropertiesScript : MonoBehaviour {
 	protected Vector3 movement3D;
 	protected Vector3 oldMovement;
 	protected Vector3 newMovement3D;
-
 	protected Vector3 rotation3D;
 
 	protected Vector3 arrowMovement;
 	protected Vector3 arrowRotation;
 	protected RaycastHit hitInfo;
+
 	protected float checkSpotSize;
 	protected float sphereRadii;
 	protected List<Vector3> checkSpotsList;
+	protected List<SphereCollider> spheresList;
+	protected SphereCollider[] aSphere;
 
 	void Start () {
 		movement3D = Vector3.zero;

@@ -17,5 +17,7 @@ public class CapsuleCollisionCastScript : GenericPhysicsPropertiesScript {
 			new Vector3(0f,-transform.localScale.y*0.5f,0f),
 			new Vector3(0f,transform.localScale.y*0.5f,0f)
 		};
+
+		spheresList = new List<SphereCollider> ();
 	}
 }

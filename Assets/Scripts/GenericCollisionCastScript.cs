@@ -8,16 +8,25 @@ public class GenericCollisionCastScript : GenericPhysicsPropertiesScript {
 
 	void FixedUpdate()
 	{
-		transform.Translate (movement3D,Space.World);
-		transform.Rotate (rotation3D);
+
+		//for (int i = 0; i < aSphere.GetLength (0); i++) {
+		//	aSphere[i].transform.Translate(-movement3D,Space.World);
+		//}
+		Debug.Log ("1 "+transform.name + " " + Time.realtimeSinceStartup);
 		ApplyGravity();
 		movement3D += arrowMovement;
 		rotation3D = arrowRotation;
 
-		//do{
-			oldMovement = movement3D;
-			CapsuleCastShortening();
-		//}while(!movement3D.Equals(vectorCutOnMargin(oldMovement)));
+		CapsuleCastShortening();
+
+
+
+		Debug.DrawRay(transform.position + new Vector3(0f, -0.7f, 0f), movement3D,Color.cyan);
+		Debug.DrawRay(transform.position + new Vector3(0.37f, 0f, 0f), movement3D,Color.cyan);
+		Debug.DrawRay(transform.position + new Vector3(-0.37f, 0f, 0f), movement3D,Color.cyan);
+		Debug.Log ("2 "+transform.name + " " + Time.realtimeSinceStartup);
+		transform.Translate (movement3D,Space.World);
+		transform.Rotate (rotation3D);
 	}
 
 	void ApplyGravity()
