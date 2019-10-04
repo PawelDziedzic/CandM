@@ -16,8 +16,8 @@ public class GenericCollisionCastScript : GenericPhysicsPropertiesScript {
 		ApplyGravity();
 		movement3D += arrowMovement;
 		rotation3D = arrowRotation;
-
-		CapsuleCastShortening();
+        Debug.DrawRay(transform.position + new Vector3(0f, 0.5f, 0f), movement3D, Color.green);
+        CapsuleCastShortening();
 
 
 
@@ -69,7 +69,7 @@ public class GenericCollisionCastScript : GenericPhysicsPropertiesScript {
 	Vector3 ShorteningByCast(Vector3 pos, Vector3 vecInput)
 	{
 		if(Physics.SphereCast(transform.position + pos, sphereRadii, vecInput, out hitInfo, vecInput.magnitude)){
-			drawCross (hitInfo.point, Color.magenta, 1f);
+			drawCross (hitInfo.point, Color.magenta, 0.1f);
 			newMovement3D = Vector3.Project (hitInfo.point - transform.position - pos, hitInfo.normal) + hitInfo.normal*sphereRadii;
 			newMovement3D += Vector3.ProjectOnPlane (vecInput, hitInfo.normal);
 			newMovement3D += hitInfo.normal * checkSpotSize;

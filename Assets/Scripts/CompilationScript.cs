@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MasterPlayer2DScript : MonoBehaviour
+public class CompilationScript : MonoBehaviour
 {
     protected Vector3 movement3D;
     protected Vector3 oldMovement;
@@ -17,9 +17,7 @@ public class MasterPlayer2DScript : MonoBehaviour
     protected float sphereRadii;
     protected List<Vector3> checkSpotsList;
     protected List<SphereCollider> spheresList;
-
-    Color shade;
-
+    protected SphereCollider[] aSphere;
 
     void Start()
     {
@@ -29,33 +27,36 @@ public class MasterPlayer2DScript : MonoBehaviour
         rotation3D = Vector3.zero;
         arrowRotation = Vector3.zero;
         checkSpotSize = 0.01f;
-        //sphereRadii = transform.localScale.z * 0.5f + 0.05f;
-        sphereRadii = 0.5f;//<<<<<<<<<<<
-        
+        sphereRadii = 0.5f;
+
         checkSpotsList = new List<Vector3>(){
             new Vector3(0f,0f,0f)
         };
-        shade = new Color(1f, 0f, 0f);
     }
 
     public float gForce;
 
-
     void FixedUpdate()
     {
-        transform.Translate(movement3D, Space.World);
-        transform.Rotate(rotation3D);
 
+        //for (int i = 0; i < aSphere.GetLength (0); i++) {
+        //	aSphere[i].transform.Translate(-movement3D,Space.World);
+        //}
         Debug.Log("1 " + transform.name + " " + Time.realtimeSinceStartup);
         ApplyGravity();
         movement3D += arrowMovement;
         rotation3D = arrowRotation;
-        Debug.DrawRay(transform.position + new Vector3(0f, -0.5f, 0f), movement3D, Color.green);
-
+        Debug.DrawRay(transform.position + new Vector3(0f, 0.5f, 0f), movement3D, Color.green);
         CapsuleCastShortening();
-        
-        
+
+
+
+        Debug.DrawRay(transform.position + new Vector3(0f, -0.7f, 0f), movement3D, Color.cyan);
+        Debug.DrawRay(transform.position + new Vector3(0.37f, 0f, 0f), movement3D, Color.cyan);
+        Debug.DrawRay(transform.position + new Vector3(-0.37f, 0f, 0f), movement3D, Color.cyan);
         Debug.Log("2 " + transform.name + " " + Time.realtimeSinceStartup);
+        transform.Translate(movement3D, Space.World);
+        transform.Rotate(rotation3D);
     }
 
     void ApplyGravity()
@@ -99,42 +100,21 @@ public class MasterPlayer2DScript : MonoBehaviour
             return vec1;
     }
 
-    Vector3 ShorteningBySweep(Vector3 vecInput)
-    {
-        if(myRb.SweepTest(vecInput, out hitInfo, vecInput.magnitude))
-        {
-            newMovement3D = Vector3.ProjectOnPlane(vecInput, hitInfo.normal) -hitInfo.normal*hitInfo.distance;
-            newMovement3D += hitInfo.normal * checkSpotSize;
-            return ShorteningBySweep(newMovement3D);
-        }
-        else
-            return vecInput;
-    }
-
     Vector3 ShorteningByCast(Vector3 pos, Vector3 vecInput)
     {
         if (Physics.SphereCast(transform.position + pos, sphereRadii, vecInput, out hitInfo, vecInput.magnitude))
         {
             drawCross(hitInfo.point, Color.magenta, 0.1f);
-            Debug.DrawRay(hitInfo.point - vecInput.normalized * hitInfo.distance, movement3D, Color.green);
-            //newMovement3D = Vector3.Project(hitInfo.point - transform.position - pos, hitInfo.normal) + hitInfo.normal * sphereRadii;
-            //newMovement3D += Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
-            //newMovement3D += hitInfo.normal *checkSpotSize;
-
-            newMovement3D = Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
-            newMovement3D += Vector3.Project(vecInput.normalized * hitInfo.distance, hitInfo.normal);
+            newMovement3D = Vector3.Project(hitInfo.point - transform.position - pos, hitInfo.normal) + hitInfo.normal * sphereRadii;
+            newMovement3D += Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
             newMovement3D += hitInfo.normal * checkSpotSize;
-            Debug.DrawRay(hitInfo.point - vecInput.normalized * hitInfo.distance, newMovement3D, Color.cyan);
             return ShorteningByCast(pos, newMovement3D);
-            //return vecInput;
         }
         else
         {
             return vecInput;
         }
     }
-
-
 
     void drawCross(Vector3 pos, Color col, float scale)
     {
@@ -146,16 +126,12 @@ public class MasterPlayer2DScript : MonoBehaviour
         Debug.DrawRay(pos, Vector3.back * scale, col);
     }
 
-
     protected bool isFacingLeft;
     public float speed;
-    protected Rigidbody myRb;
-
 
     void OnEnable()
     {
         isFacingLeft = false;
-        myRb = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -188,4 +164,3 @@ public class MasterPlayer2DScript : MonoBehaviour
         }
     }
 }
-
