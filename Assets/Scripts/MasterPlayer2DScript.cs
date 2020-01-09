@@ -6,12 +6,10 @@ public class MasterPlayer2DScript : MonoBehaviour
 {
     protected Vector3 movement3D;
     protected Vector3 oldMovement;
-    protected Vector3 newMovement3D;
     protected Vector3 rotation3D;
 
     protected Vector3 arrowMovement;
     protected Vector3 arrowRotation;
-    protected RaycastHit hitInfo;
 
     protected float checkSpotSize;
     protected float sphereRadii;
@@ -23,7 +21,6 @@ public class MasterPlayer2DScript : MonoBehaviour
 
     void Start()
     {
-        movement3D = Vector3.zero;
         oldMovement = Vector3.zero;
         arrowMovement = Vector3.zero;
         rotation3D = Vector3.zero;
@@ -43,8 +40,8 @@ public class MasterPlayer2DScript : MonoBehaviour
 
     void FixedUpdate()
     {
-        transform.Translate(movement3D, Space.World);
-        transform.Rotate(rotation3D);
+        //transform.Translate(movement3D, Space.World);
+        //transform.Rotate(rotation3D);
 
         Debug.Log("1 " + transform.name + " " + Time.realtimeSinceStartup);
         ApplyGravity();
@@ -53,8 +50,10 @@ public class MasterPlayer2DScript : MonoBehaviour
         Debug.DrawRay(transform.position + new Vector3(0f, -0.5f, 0f), movement3D, Color.green);
 
         CapsuleCastShortening();
-        
-        
+
+
+        transform.Translate(movement3D, Space.World);
+        transform.Rotate(rotation3D);
         Debug.Log("2 " + transform.name + " " + Time.realtimeSinceStartup);
     }
 
@@ -65,7 +64,8 @@ public class MasterPlayer2DScript : MonoBehaviour
 
     void CapsuleCastShortening()
     {
-        movement3D = vectorCutOnMargin(getShortestCollisionFromSpheres(checkSpotsList, movement3D));
+        //movement3D = vectorCutOnMargin(getShortestCollisionFromSpheres(checkSpotsList, movement3D));
+        movement3D = vectorCutOnMargin(ShorteningBySweep(movement3D));
     }
 
     Vector3 vectorCutOnMargin(Vector3 vec)
@@ -79,10 +79,12 @@ public class MasterPlayer2DScript : MonoBehaviour
             return Vector3.zero;
         }
     }
+    
 
     Vector3 getShortestCollisionFromSpheres(List<Vector3> vecList, Vector3 inputVec)
     {
         Vector3 tempShortest = ShorteningByCast(vecList[0], inputVec);
+       
         for (int i = 1; i < vecList.Count; i++)
         {
             tempShortest = getShorterVector(tempShortest, ShorteningByCast(vecList[i], inputVec));
@@ -101,10 +103,17 @@ public class MasterPlayer2DScript : MonoBehaviour
 
     Vector3 ShorteningBySweep(Vector3 vecInput)
     {
+        RaycastHit hitInfo;
         if(myRb.SweepTest(vecInput, out hitInfo, vecInput.magnitude))
         {
-            newMovement3D = Vector3.ProjectOnPlane(vecInput, hitInfo.normal) -hitInfo.normal*hitInfo.distance;
+            drawCross(hitInfo.point, Color.magenta, 0.1f);
+            Debug.DrawRay(hitInfo.point - vecInput.normalized * hitInfo.distance, vecInput, Color.green);
+            Debug.DrawRay(transform.position + Vector3.right * 0.375f, vecInput, Color.green);
+            Vector3 newMovement3D = Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
+            newMovement3D += Vector3.Project(vecInput.normalized * hitInfo.distance, hitInfo.normal);
             newMovement3D += hitInfo.normal * checkSpotSize;
+            Debug.DrawRay(hitInfo.point - vecInput.normalized * hitInfo.distance, newMovement3D, Color.cyan);
+            Debug.DrawRay(transform.position + Vector3.right*0.375f, newMovement3D, Color.cyan);
             return ShorteningBySweep(newMovement3D);
         }
         else
@@ -113,20 +122,18 @@ public class MasterPlayer2DScript : MonoBehaviour
 
     Vector3 ShorteningByCast(Vector3 pos, Vector3 vecInput)
     {
+        RaycastHit hitInfo;
+        //if(Physics.CapsuleCast(transform.position + Vector3.up*0.375f, transform.position - Vector3.up * 0.375f,0.375f, vecInput,out hitInfo, vecInput.magnitude))
         if (Physics.SphereCast(transform.position + pos, sphereRadii, vecInput, out hitInfo, vecInput.magnitude))
         {
             drawCross(hitInfo.point, Color.magenta, 0.1f);
             Debug.DrawRay(hitInfo.point - vecInput.normalized * hitInfo.distance, movement3D, Color.green);
-            //newMovement3D = Vector3.Project(hitInfo.point - transform.position - pos, hitInfo.normal) + hitInfo.normal * sphereRadii;
-            //newMovement3D += Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
-            //newMovement3D += hitInfo.normal *checkSpotSize;
 
-            newMovement3D = Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
+            Vector3 newMovement3D = Vector3.ProjectOnPlane(vecInput, hitInfo.normal);
             newMovement3D += Vector3.Project(vecInput.normalized * hitInfo.distance, hitInfo.normal);
             newMovement3D += hitInfo.normal * checkSpotSize;
             Debug.DrawRay(hitInfo.point - vecInput.normalized * hitInfo.distance, newMovement3D, Color.cyan);
             return ShorteningByCast(pos, newMovement3D);
-            //return vecInput;
         }
         else
         {
